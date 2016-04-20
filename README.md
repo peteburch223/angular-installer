@@ -15,18 +15,14 @@ It performs the following tasks:
 Installation instructions
 -------------------------
 - Clone the git repo
-- save script `angular-init.sh` in an appropriate location
-- add path to script to $PATH
+- save scripts `angular-init.sh`  & `angular-run-test.sh` to an appropriate location (eg `~/bin`)
+- add path to script to $PATH, if necessary
 
 Execution instructions
 ----------------------
 - navigate to parent directory of project you want to create
 - `source angular-init.sh <project-name>`
-- open console: `webdriver-manager start`
-- open another console: ` http-server ./app
-`
-- In a third console: `protractor test/protractor.conf.js` to run basic feature test
-- `karma start test/karma.conf.js` to run basic unit tests
+- `angular-run-test.sh` to launch webdriver and webserver, and to run basic feature and unit tests
 
 Copyright notice
 ----------------

@@ -3,7 +3,7 @@ trap "exit" INT
 dir_name=$1
 clear
 
-echo "\nchecking for JDK install\n"
+echo "checking for JDK install"
 JAVA_VER=$(java -version 2>&1 | sed 's/java version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q')
 
 if [ -z $JAVA_VER ]; then
@@ -28,7 +28,7 @@ else
   return
 fi
 
-echo "\n***Set up Git repo***\n"
+echo "***Set up Git repo***"
 git init
 touch README.md
 
@@ -41,8 +41,7 @@ if [ -z $node_version ]; then
   return
 fi
 
-
-
+echo "*** Setting up NPM ***"
 npm init -f
 npm install bower -g --save-dev
 echo "*** Setting up Bower ***"
@@ -52,7 +51,6 @@ touch .bowerrc
 printf "%s\n" "{" "  \"directory\": \"app/bower_components\"" "}" > .bowerrc
 mkdir app
 
-# need to figure out how to get angular version
 printf "%s\n" "{" \
               "  \"name\": \"$dir_name\"," \
               "  \"description\": \"<project description>\"," \
@@ -76,8 +74,6 @@ printf "%s\n" "{" \
               > bower.json
 
 bower install
-
-
 
 echo "*** Install Angular ***"
 bower install angular --save
@@ -121,15 +117,18 @@ printf "%s\n" "<!doctype html>" \
               "   <meta charset=\"utf-8\">" \
               "   <script src=\"bower_components/angular/angular.js\"></script>" \
               "   <script src=\"js/app.js\"></script>" \
+              "   <script src=\"js/controllers/ToDoController.js\"></script>" \
               "   <title>Todos App</title>" \
               " </head>" \
               " <body>" \
-              "   <p>Hello world<p>" \
+              "   <div id=\"todo\" ng-controller=\"ToDoController as controller\">" \
+              "     {{ controller.todo }}" \
+              "   </div>" \
               " </body>" \
               "</html>" \
               > app/index.html
 
-echo "*** Create sample feature test"
+echo "*** Create sample test ***"
 
 mkdir test/e2e
 touch test/e2e/todoFeatures.js
@@ -142,6 +141,28 @@ printf "%s\n" "describe('Todos tracker', function() {" \
               "});" \
               > test/e2e/todoFeatures.js
 
+mkdir test/unit
+touch test/unit/ToDoController.spec.js
+
+printf "%s\n" "describe('ToDoController', function() {" \
+              "  beforeEach(module('toDoApp'));" \
+              "  it('initialises with a toDo', function() {" \
+              "    expect(ctrl.todo).toEqual(\"ToDo1\");" \
+              "  });" \
+              "  var ctrl;" \
+              "  beforeEach(inject(function($controller) {" \
+              "    ctrl = $controller('ToDoController');" \
+              "  }));" \
+              "});" \
+              > test/unit/ToDoController.spec.js
+
+mkdir app/js/controllers
+touch app/js/controllers/ToDoController.js
+
+printf "%s\n" "toDoApp.controller('ToDoController', [function() {" \
+              "  this.todo = \"ToDo1\";" \
+              "}]);" \
+              > app/js/controllers/ToDoController.js
 
 touch .gitignore
 printf "%s\n" "node_modules" "app/bower_components" > .gitignore
@@ -167,6 +188,7 @@ printf "%s\n" "module.exports = function(config){" \
               "      autoWatch : true,"  \
               "      frameworks: ['jasmine'],"  \
               "      browsers : ['Chrome'],"  \
+              "      port: 8080," \
               "      plugins : ["  \
               "              'karma-chrome-launcher',"  \
               "              'karma-jasmine'"  \
