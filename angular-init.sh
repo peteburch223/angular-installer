@@ -61,7 +61,7 @@ printf "%s\n" "{" \
               "  \"ignore\": [" \
               "    \"**/.*\"," \
               "    \"node_modules\"," \
-              "    \"app/bower_components\"," \
+              "    \"bower_components\"," \
               "    \"test\"," \
               "    \"tests\"" \
               "  ]," \
@@ -80,6 +80,8 @@ bower install
 
 echo "*** Install Angular ***"
 bower install angular --save
+
+# END OF WALKTHROUGH 8
 
 
 cd $proj_root
@@ -103,6 +105,7 @@ printf "%s\n" "exports.config = {" \
 echo "*** Install http-server ***"
 npm install --save http-server
 npm install http-server -g
+
 
 echo "*** Create primary app files"
 mkdir app/js
