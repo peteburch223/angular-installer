@@ -3,7 +3,7 @@ trap "exit" INT
 dir_name=$1
 clear
 
-echo "checking for JDK install"
+echo "\nchecking for JDK install\n"
 JAVA_VER=$(java -version 2>&1 | sed 's/java version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q')
 
 if [ -z $JAVA_VER ]; then
@@ -28,16 +28,17 @@ else
   return
 fi
 
+echo "\n***Set up Git repo***\n"
 git init
 touch README.md
 
-echo "checking for node"
+echo "checking for Node"
 node_version=$(node -v)
 echo "$node_version"
 
 if [ -z $node_version ]; then
-  echo "node not installed, installing with brew"
-  brew install node
+  echo "please install node"
+  return
 fi
 
 
@@ -128,7 +129,7 @@ printf "%s\n" "<!doctype html>" \
               "</html>" \
               > app/index.html
 
-echo "*** Create sample test"
+echo "*** Create sample feature test"
 
 mkdir test/e2e
 touch test/e2e/todoFeatures.js
@@ -145,4 +146,32 @@ printf "%s\n" "describe('Todos tracker', function() {" \
 touch .gitignore
 printf "%s\n" "node_modules" "app/bower_components" > .gitignore
 
+echo "*** Install Karma ***"
+
+npm install karma --save-dev
+npm install karma-jasmine karma-chrome-launcher --save-dev
+npm install jasmine-core --save-dev
+npm install -g karma-cli
+bower install angular-mocks --save-dev
+
+echo "*** Create Karma Config file ***"
+printf "%s\n" "module.exports = function(config){" \
+              "  config.set({" \
+              "     basePath : '../'," \
+              "     files : ["  \
+              "        'app/bower_components/angular/angular.js',"  \
+              "        'app/bower_components/angular-mocks/angular-mocks.js',"  \
+              "        'app/js/**/*.js',"  \
+              "        'test/unit/**/*.js'"  \
+              "      ],"  \
+              "      autoWatch : true,"  \
+              "      frameworks: ['jasmine'],"  \
+              "      browsers : ['Chrome'],"  \
+              "      plugins : ["  \
+              "              'karma-chrome-launcher',"  \
+              "              'karma-jasmine'"  \
+              "      ]"  \
+              "    });"  \
+              "  };"  \
+              > test/karma.conf.js
 echo "Script completed successfully"
