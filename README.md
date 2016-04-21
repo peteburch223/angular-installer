@@ -12,11 +12,14 @@ It performs the following tasks:
 - installs Protractor and Karma testing frameworks
 - creates a skeleton Angular app that demonstrates basic feature and unit testing
 
-Installation instructions
+Installation and Initialisation instructions
 -------------------------
-- Clone the git repo
-- save scripts `angular-init.sh`  & `angular-run-test.sh` to an appropriate location (eg `~/bin`)
-- add path to script to $PATH, if necessary
+```
+$ git clone <repo-link>
+$ angular-installer/angular-init.sh <app-name>
+$ cd <app-name>
+
+```
 
 Execution instructions
 ----------------------
