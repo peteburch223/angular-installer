@@ -7,7 +7,6 @@ end tell"
 
 osascript -e "tell app \"Terminal\"
     do script \"cd $current_dir &&  webdriver-manager start\"
-
 end tell"
 
 # the sleep values are not optimised

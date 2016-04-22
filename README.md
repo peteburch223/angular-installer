@@ -32,9 +32,12 @@ This program is distributed in the hope that it will be useful, but WITHOUT ANY 
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Version 0.1
+Version 0.2
 -----------
-This is an initial version of a script that has been very lightly tested...
+This is an early version of a script that has been very lightly tested...
+
+Changes in v0.2: 22 April 2016
+- project files and angular elements are named from the project name entered on the command line
 
 
 Authors

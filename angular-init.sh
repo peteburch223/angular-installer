@@ -1,6 +1,28 @@
 #!/bin/bash
+
 trap "exit" INT
 dir_name=$1
+
+arr=(${dir_name//_/ })
+first=1
+declare -a camelCaseName
+declare -a PascalCaseName
+for i in "${arr[@]}"; do
+  if [ $first -eq 0 ]; then
+    camelCaseName+=$(tr '[a-z]' '[A-Z]' <<< ${i:0:1} )
+  else
+    camelCaseName+="${i:0:1}"
+    first=0
+  fi
+  camelCaseName+="${i:1}"
+  PascalCaseName+=$(tr '[a-z]' '[A-Z]' <<< ${i:0:1} )
+  PascalCaseName+="${i:1}"
+done
+
+htmlTitle="${camelCaseName} App"
+controllerName="${PascalCaseName}Controller"
+appName="${camelCaseName}App"
+
 clear
 
 echo "checking for JDK install"
@@ -47,7 +69,7 @@ npm install bower -g --save-dev
 echo "*** Setting up Bower ***"
 
 echo "creating app directory"
-touch .bowerrc
+
 printf "%s\n" "{" "  \"directory\": \"app/bower_components\"" "}" > .bowerrc
 mkdir app
 
@@ -80,7 +102,6 @@ bower install angular --save
 
 # END OF WALKTHROUGH 8
 
-
 cd $proj_root
 echo "*** Install Protractor ***"
 npm install -g protractor
@@ -91,7 +112,6 @@ webdriver-manager update
 echo "*** Create Protractor config file ***"
 
 mkdir test
-touch test/protractor.conf.js
 printf "%s\n" "exports.config = {" \
               "  seleniumAddress: 'http://localhost:4444/wd/hub'," \
               "  specs: ['e2e/*.js']," \
@@ -104,67 +124,59 @@ npm install --save http-server
 npm install http-server -g
 
 
-echo "*** Create primary app files"
+echo "*** Create primary app files ***"
 mkdir app/js
-touch app/js/app.js
-printf "%s\n" "var toDoApp = angular.module('toDoApp', []);" > app/js/app.js
+printf "%s\n" "var ${appName} = angular.module('${appName}', []);" > app/js/app.js
 
-touch app/index.html
-
+echo "*** Create index.html ****"
 printf "%s\n" "<!doctype html>" \
-              "<html lang=\"en\" ng-app=\"toDoApp\">" \
+              "<html lang=\"en\" ng-app=\"${appName}\">" \
               " <head>" \
               "   <meta charset=\"utf-8\">" \
               "   <script src=\"bower_components/angular/angular.js\"></script>" \
               "   <script src=\"js/app.js\"></script>" \
-              "   <script src=\"js/controllers/ToDoController.js\"></script>" \
-              "   <title>Todos App</title>" \
+              "   <script src=\"js/controllers/${controllerName}.js\"></script>" \
+              "   <title>${htmlTitle}</title>" \
               " </head>" \
               " <body>" \
-              "   <div id=\"todo\" ng-controller=\"ToDoController as controller\">" \
-              "     {{ controller.todo }}" \
+              "   <div id=\"${camelCaseName}\" ng-controller=\"${controllerName} as controller\">" \
+              "     {{ controller.${camelCaseName} }}" \
               "   </div>" \
               " </body>" \
               "</html>" \
               > app/index.html
 
 echo "*** Create sample test ***"
-
 mkdir test/e2e
-touch test/e2e/todoFeatures.js
-
-printf "%s\n" "describe('Todos tracker', function() {" \
+printf "%s\n" "describe('Basic feature test of ${htmlTitle}', function() {" \
               "  it('has a title', function() {" \
               "    browser.get('/');" \
-              "    expect(browser.getTitle()).toEqual('Todos App');" \
+              "    expect(browser.getTitle()).toEqual('${htmlTitle}');" \
               "  });" \
               "});" \
-              > test/e2e/todoFeatures.js
+              > test/e2e/${PascalCaseName}Features.js
 
+echo "*** Create Angular controller test file ***"
 mkdir test/unit
-touch test/unit/ToDoController.spec.js
-
-printf "%s\n" "describe('ToDoController', function() {" \
-              "  beforeEach(module('toDoApp'));" \
+printf "%s\n" "describe('${controllerName}', function() {" \
+              "  beforeEach(module('${appName}'));" \
               "  it('initialises with a toDo', function() {" \
-              "    expect(ctrl.todo).toEqual(\"ToDo1\");" \
+              "    expect(ctrl.${camelCaseName}).toEqual(\"${PascalCaseName}1\");" \
               "  });" \
               "  var ctrl;" \
-              "  beforeEach(inject(function($controller) {" \
-              "    ctrl = $controller('ToDoController');" \
+              "  beforeEach(inject(function(\$controller) {" \
+              "    ctrl = \$controller('${controllerName}');" \
               "  }));" \
               "});" \
-              > test/unit/ToDoController.spec.js
+              > test/unit/${controllerName}.spec.js
 
+echo "*** Create Angular controller test file ***"
 mkdir app/js/controllers
-touch app/js/controllers/ToDoController.js
-
-printf "%s\n" "toDoApp.controller('ToDoController', [function() {" \
-              "  this.todo = \"ToDo1\";" \
+printf "%s\n" "${appName}.controller('${controllerName}', [function() {" \
+              "  this.${camelCaseName} = \"${PascalCaseName}1\";" \
               "}]);" \
-              > app/js/controllers/ToDoController.js
+              > app/js/controllers/${controllerName}.js
 
-touch .gitignore
 printf "%s\n" "node_modules" "app/bower_components" > .gitignore
 
 echo "*** Install Karma ***"
